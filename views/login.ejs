@@ -1,1 +1,150 @@
-Please wait...
+<!DOCTYPE html>
+<html lang="ko">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="x-ua-compatible" content="ie=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<title>Yutnori - 로그인</title>
+		<!-- jQuery -->
+		<script src="bower_components/jquery/dist/jquery.min.js"></script>
+
+		<!-- semantic-ui -->
+		<link href="bower_components/semantic/dist/semantic.min.css" rel="stylesheet">
+		<script src="bower_components/semantic/dist/semantic.min.js"></script>
+
+		<!-- mdi -->
+		<link href="bower_components/mdi/css/materialdesignicons.min.css" media="all" rel="stylesheet">
+
+		<!--etc.. -->
+		<link href="css/login.css" rel="stylesheet">
+		<link href="css/common.css" rel="stylesheet">
+		<link href="css/table.css" rel="stylesheet">
+		<script src="js/ui.js"></script>
+		<script>
+			$(document)
+				.ready(function() {
+					$('.ui.form')
+						.form({
+							fields: {
+								email: {
+									identifier: 'email',
+									rules: [{
+										type: 'empty',
+										prompt: '이메일을 입력해주세요'
+									}, {
+										type: 'email',
+										prompt: '유효한 이메일을 입력해주세요'
+									}]
+								},
+								password: {
+									identifier: 'password',
+									rules: [{
+										type: 'empty',
+										prompt: '비밀번호를 입력해주세요'
+									}, {
+										type: 'length[6]',
+										prompt: '비밀번호는 6자를 넘어야 합니다.'
+									}]
+								}
+							}
+						});
+				});
+		</script>
+	</head>
+
+	<body>
+			<div class="ui center middle aligned grid account-layout">
+				<div class="segment account-segment" style="width: 100%">
+					<div class="ui two column very relaxed stackable grid centered container account-container">
+						<div class="column">
+							<form class="ui large form">
+								<div class="ui stacked segment account middle aligned">
+									<div class="account-contents">
+										<h1 class="ui teal image header" style="float:left; font-size:4em;">
+											<div class="content">
+												LOG<span class="unbold">IN</span>
+											</div>
+										</h1>
+										<div class="field">
+											<div class="ui left icon input">
+												<i class="mdi mdi-account icon" style="font-size:1em;"></i>
+												<input type="text" name="email" placeholder="이메일 주소">
+											</div>
+										</div>
+										<div class="field">
+											<div class="ui left icon input">
+												<i class="mdi mdi-key icon" style="font-size:1em"></i>
+												<input type="password" name="password" placeholder="비밀번호">
+											</div>
+										</div>
+										<div class="ui fluid large teal submit button">로그인</div>
+									</div>
+								</div>
+							</form>
+						</div>
+
+						<div class="ui vertical divider">
+							or
+						</div>
+
+						<div class="column">
+							<form class="ui large form">
+								<div class="ui stacked segment account">
+									<div class="account-contents">
+										<h1 class="ui teal image header" style="float:left; font-size:4em;">
+											<div class="content">
+												SIGN<span class="unbold">IN</span>
+											</div>
+										</h1>
+
+										<div class="field">
+											<div class="ui left icon input">
+												<i class="mdi mdi-account icon" style="font-size:1em"></i>
+												<input type="text" name="name" placeholder="이름">
+											</div>
+										</div>
+
+										<div class="field">
+											<div class="ui left icon input">
+												<i class="mdi mdi-account icon" style="font-size:1em"></i>
+												<input type="text" name="email" placeholder="이메일 주소">
+											</div>
+										</div>
+
+										<div class="field">
+											<div class="ui left icon input">
+												<i class="mdi mdi-key icon" style="font-size:1em"></i>
+												<input type="password" name="password" placeholder="비밀번호">
+											</div>
+										</div>
+
+										<div class="field">
+											<div class="ui left icon input">
+												<i class="mdi mdi-key icon" style="font-size:1em"></i>
+												<input type="password" name="password-confirm" placeholder="비밀번호 확인">
+											</div>
+										</div>
+										<div class="ui fluid large teal submit button">회원가입</div>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="ui inverted vertical footer segment" style="top:3em">
+			<div class="ui container">
+				<div class="row-container warp">
+					<div class="credit">
+						<h5 class="ui inverted header">
+							<img src="../public/resources/img/logo.svg" style="width:50px; hight:auto;">
+							<span>Strategy-Yut</span>
+						</h5>
+						<p>copyright(C) if-Team</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

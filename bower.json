@@ -3,13 +3,18 @@
   "description": "이벤트성 전략 윷놀이 서버",
   "main": "src/start.js",
   "authors": [
-    "HelloWorld017 <deu07115@gmail.com>"
+    "HelloWorld017 <deu07115@gmail.com>",
+    "MuhunKim <muhun.kim@gmail.com>"
   ],
   "license": "GPL-3.0",
   "keywords": [
     "Yutnori",
     "Strategy"
   ],
+  "dependencies": {
+    "semantic": "semantic-ui#^2.1.8",
+    "mdi": "^1.6.50"
+  },
   "homepage": "https://github.com/if-Team/Strategy-Yut",
   "private": true,
   "ignore": [
