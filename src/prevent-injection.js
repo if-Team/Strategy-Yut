@@ -9,6 +9,7 @@ module.exports = (req, resp, next) => {
 	async.each(['body', 'query', 'params', 'cookies'], (k, cb) => {
 		async.map(req[k], checkValue, (err, res) => {
 			req[k] = res;
+			cb();
 		});
 	}, (err) => {
 		next();

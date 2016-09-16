@@ -6,8 +6,8 @@ class Packet{
 	}
 
 	listenToSocket(socket){
-		socket.on(this.name, () => {
-			this.onread(socket);
+		socket.on(this.name, (...args) => {
+			this.onread(socket, ...args);
 		});
 	}
 }

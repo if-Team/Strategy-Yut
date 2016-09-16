@@ -1,5 +1,5 @@
 var router = require('express').Router();
-var _ = require('../error');
+var _ = require('../src/error');
 
 router.get('/', (req, res, next) => {
 	if(!req.session.username) return res.redirect('/login');

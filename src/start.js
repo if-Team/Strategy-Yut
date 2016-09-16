@@ -1,12 +1,13 @@
+global.config = require('../config');
+
 var app = require('./app');
-var debug = require('debug')('mealworm:server');
 var fs = require('fs');
 var http = require('http');
+var sharedsession = require('express-socket.io-session')
 
 var MongoClient = require('mongodb').MongoClient;
 
-global.config = require('../server');
-global.socketEvents = require('./network/events');
+global.socketEvents = require('./network/');
 
 var port = ((val) => {
 	var port = parseInt(val, 10);
@@ -21,10 +22,31 @@ app.set('port', port);
 var url = "mongodb://" + global.config['db-address'] + ":" + global.config['db-port'] + "/" + global.config['db-name'];
 MongoClient.connect(url, (err, client) => {
 	global.mongo = client;
-	global.game = new require('./game')();
+	var Game = require('./game');
+	global.game = new Game();
+	var saveOnDeath = () => {
+		require('fs').writeFileSync('./gamesnapshot.dat', JSON.stringify(game.save()));
+		console.log('Saved before death');
+	};
+
+	process.on('exit', () => {
+		saveOnDeath();
+		process.exit(0);
+	});
+
+	process.on('SIGINT', () => {
+		process.exit(0);
+	});
+
+	process.on('uncaughtException', (e) => {
+		console.log(e);
+		saveOnDeath();
+		server.close();
+		debugger;
+	});
+
 	var server = http.createServer(app);
 
-	server.listen(port);
 	server.on('error', (error) => {
 		if(error.syscall !== 'listen') throw error;
 
@@ -47,10 +69,12 @@ MongoClient.connect(url, (err, client) => {
 	server.on('listening', () => {
 		var addr = server.address();
 		var bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
-		debug('Listening on ' + bind);
+		console.log('Listening on ' + bind);
 	});
 
-	var io = require('socket.io')(httpServer);
+	server.listen(port);
+
+	var io = require('socket.io')(server);
 	io.use(sharedsession(global.session));
 
 	io.on('connection', (socket) => {

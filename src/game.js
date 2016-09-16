@@ -188,6 +188,22 @@ class Game{
 		});
 	}
 
+	chatToTeam(playerName, data){
+		var player = this.players[playerName];
+		data = playerName + ': ' + data;
+		if(player === undefined) return;
+		var p2 = this.getAnotherTeamPlayer(player);
+		if(p2.socket !== undefined) p2.socket.emit('chat team', data);
+		if(player.socket !== undefined) player.socket.emit('chat team', data);
+		this.teamLog[player.teamIndex].push(data);
+	}
+
+	chatToAll(username, data){
+		data = username + ': ' + data;
+		broadcastPacket('chat all', data);
+		this.gameLog.push(data);
+	}
+
 	allAttached(){
 		return Object.keys(this.players).every((k) => {
 			return this.players[k].socket !== undefined;
@@ -246,7 +262,7 @@ class Game{
 				});
 
 				var turnPlayer = Object.keys(this.players)[this.turn];
-				turnPlayer.socket.emit('select piece', {
+				if(turnPlayer.socket !== undefined) turnPlayer.socket.emit('select piece', {
 					data: turnPlayer.getAvailablePieces().map((v) => {
 						return {
 							id: v.pieceId,
@@ -349,6 +365,28 @@ class Game{
 		while(!this.allThrowed()){
 			sleep(500);
 		}
+	}
+
+	save(){
+		var saveData = {};
+		Object.keys(this.players).forEach((k) => {
+			var v = this.players[k];
+			v.pieces.forEach((v) => {
+				v.player = undefined;
+			});
+		});
+		saveData.players = JSON.stringify(this.players);
+		Object.keys(this.players).forEach((k) => {
+			var v = this.players[k];
+			v.pieces.forEach((v2) => {
+				v2.player = v;
+			});
+		});
+
+		saveData.turn = this.turn;
+		saveData.gameLog = JSON.stringify(this.gameLog);
+		saveData.teamLog = JSON.stringify(this.teamLog);
+		return saveData;
 	}
 }
 
