@@ -88,7 +88,7 @@ class Player{
 	}
 
 	getAvailablePieces(){
-		return pieces.filter((v) => !v.finished);
+		return this.pieces.filter((v) => !v.finished);
 	}
 }
 
@@ -132,10 +132,9 @@ class Game{
 		this.players = {};
 		for(var i = 0; i < 4; i++){
 			var playerName = registeredPlayers.shift();
-			players[playerName] = new Player(playerName, i % 2);
+			this.players[playerName] = new Player(playerName, i % 2);
 		}
 		this.turn = 0;
-		this.status = 'waiting-for-players';
 		this.gameLog = ["NEW GAME!"];
 		this.teamLog = {
 			0: [],
@@ -173,8 +172,8 @@ class Game{
 	}
 
 	broadcastPacket(...args){
-		broadcastPacketToObservers(...args);
-		broadcastPacketToPlayers(...args);
+		this.broadcastPacketToObservers(...args);
+		this.broadcastPacketToPlayers(...args);
 	}
 
 	broadPacketToObservers(...args){
@@ -228,17 +227,17 @@ class Game{
 
 				var movementAmount = 0;
 				switch(frontStatus){
-					case 0: movementAmount = 5; //모
-					case 1: movementAmount = 3; //걸
-					case 2: movementAmount = 2; //개
-					case 3: movementAmount = -1; //뒷도(백도)
-					case 4: movementAmount = 4; //윷
+					case 0: movementAmount = 5; break; //모
+					case 1: movementAmount = 3; break; //걸
+					case 2: movementAmount = 2; break; //개
+					case 3: movementAmount = -1; break; //뒷도(백도)
+					case 4: movementAmount = 4; break; //윷
 				}
 
 				if(movementAmount === 4 || movementAmount === 5) movementPoint++;
 
 				this.broadcastPacket('yut result', {
-					amount: movementAmount
+					amount: movementAmount,
 					players: Object.keys(this.players).map((k) => this.players[k].yutStatus)
 				});
 
@@ -246,7 +245,7 @@ class Game{
 					this.players[k].yutStatus = undefined;
 				});
 
-				var turnPlayer = Object.keys(this.players)[turn];
+				var turnPlayer = Object.keys(this.players)[this.turn];
 				turnPlayer.socket.emit('select piece', {
 					data: turnPlayer.getAvailablePieces().map((v) => {
 						return {
@@ -259,7 +258,7 @@ class Game{
 				var waitAmount = 0;
 
 				if(turnPlayer.getAvailablePieces().length <= 0){
-					this.handleWin();
+					this.handleWin(turnPlayer);
 					return;
 				}else if(turnPlayer.getAvailablePieces().length === 1){
 					turnPlayer.selectedPiece = turnPlayer.getAvailablePieces()[0].pieceIndex;
@@ -286,27 +285,46 @@ class Game{
 						id: piece.pieceIndex,
 						pos: piece.pos
 					});
+
 					if(piece.pos === 1){
 						piece.finished = true;
 						this.broadcastPacket('finished piece', {
 							id: piece.pieceIndex
 						});
-						break;
+						return true;
 					}
-				}
+					return false;
+				};
+
 				while(movementAmount > 1){
-					var currTile = this.map[piece.pos];
-					handleMovement(currTile.getPass(piece.movementStack.slice(-1).pop()));
+					let currTile = this.map[piece.pos];
+					if(handleMovement(currTile.getPass(piece.movementStack.slice(-1).pop()))) break;
 					movementAmount--;
 					sleep(1000);
 				}
 
+				var currTile = this.map[piece.pos];
 				if(movementAmount === -1){
 					handleMovement(currTile.getBack(piece.movementStack.slice(-1).pop()));
 				}else if(movementAmount === 1){
 					handleMovement(currTile.getConnected(piece.movementStack.slice(-1).pop()));
 				}
 
+				if(piece.pos !== 0){
+					var piecesInTile = this.getPieceInTile(piece.pos);
+					if(piecesInTile.length >= 1){
+						piecesInTile.forEach((v) => {
+							v.pos = 0;
+						});
+						movementPoint++;
+						//잡을 경우
+					}
+				}
+
+				if(turnPlayer.getAvailablePieces().length <= 0){
+					this.handleWin(turnPlayer);
+					return;
+				}
 				movementPoint--;
 			}
 
@@ -315,10 +333,28 @@ class Game{
 		});
 	}
 
+	getAnotherTeamPlayer(player){
+		return this.players.filter((v) => {
+			return v.teamIndex === player.teamIndex && v.name !== player.name;
+		})[0];
+	}
+
+	handleWin(player){
+		var anotherPlayer = this.getAnotherTeamPlayer(player);
+		this.gameLog.push('게임이 끝났습니다 : ' + player.name + '와 ' + anotherPlayer.name + '가 이겼습니다! 축하드립니다!');
+	}
+
 	requestThrowYut(){
-		broadcastPacketToPlayers('throw yut');
+		this.broadcastPacketToPlayers('throw yut');
 		while(!this.allThrowed()){
 			sleep(500);
 		}
 	}
 }
+
+Game.Tile = Tile;
+Game.CenterTile = CenterTile;
+Game.Player = Player;
+Game.Piece = Piece;
+
+module.exports = Game;
