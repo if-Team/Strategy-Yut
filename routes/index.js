@@ -75,7 +75,7 @@ router.get('/piece/:color/for/:id', (req, res, next) => {
 				}
 				res.status(200).set('Content-Type', 'image/png').send(buf)
 			});
-		}
+		}catch(e){}
 	}else{
 		fs.createReadStream(path.join(__dirname, '..', 'resources', 'img', 'piece-base.svg')).pipe(res);
 	}
