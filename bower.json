@@ -1,0 +1,22 @@
+{
+  "name": "strategy-yut",
+  "description": "이벤트성 전략 윷놀이 서버",
+  "main": "src/start.js",
+  "authors": [
+    "HelloWorld017 <deu07115@gmail.com>"
+  ],
+  "license": "GPL-3.0",
+  "keywords": [
+    "Yutnori",
+    "Strategy"
+  ],
+  "homepage": "https://github.com/if-Team/Strategy-Yut",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

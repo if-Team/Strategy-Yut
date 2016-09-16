@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<svg width="512" height="512" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<rect width="512" height="512" fill="#ff9800"/>
+	<!-- <polygon points="283,64 448,229 229,448 64,283 283,64" fill="#fff"/> -->
+	<polygon points="0,119 512,119 283,64 0,119" fill="#ff9800"/>
+
+	<!-- core -->
+	<g transform="rotate(90 256 256)">
+		<path d="M174,102 H324" fill="transparent" stroke="#fff" stroke-width="30" transform="rotate(52 249 102)"/>
+		<path d="M174,205 H324" fill="transparent" stroke="#fff" stroke-width="30" transform="rotate(72 249 205)"/>
+		<path d="M174,307 H324" fill="transparent" stroke="#fff" stroke-width="30" transform="rotate(20 249 307)"/>
+		<path d="M174,410 H324" fill="transparent" stroke="#fff" stroke-width="30" transform="rotate(230 249 410)"/>
+	</g>
+</svg>
