@@ -73,6 +73,11 @@ class Player{
 		this.pieces = [new Piece(this, 0), new Piece(this, 1)];
 		this.socket = undefined;
 		this.yutStatus = undefined;
+		this.selectedPiece = undefined;
+	}
+
+	getAvailablePieces(){
+		return pieces.filter((v) => !v.finished);
 	}
 }
 
@@ -80,7 +85,9 @@ class Piece{
 	constructor(player, pieceIndex){
 		this.pos = 0;
 		this.player = player;
+		this.finished = false;
 		this.pieceIndex = pieceIndex;
+		this.movementStack = [0];
 	}
 }
 
@@ -144,6 +151,16 @@ class Game{
 		this.sockets[id] = undefined;
 	}
 
+	getPieceInTile(piecePosition){
+		this.players.map((v) => v.pieces).map((v) => {
+			return v.filter((v) => {
+				return !v.finished && v.pos === piecePosition;
+			});
+		}).reduce((prev, curr) => {
+			return prev.concat(curr);
+		}, []);
+	}
+
 	broadcastPacket(...args){
 		broadcastPacketToObservers(...args);
 		broadcastPacketToPlayers(...args);
@@ -177,6 +194,10 @@ class Game{
 		this.players[playerName].yutStatus = isFront;
 	}
 
+	handleSelect(playerName, which){
+		this.players[playerName].selectedPiece = which;
+	}
+
 	processTurn(){
 		Fiber(() => {
 			while(!this.allAttached()){
@@ -189,16 +210,9 @@ class Game{
 				var frontStatus = 0;
 
 				Object.keys(this.players).forEach((k) => {
-					broadcastPacket('yut result', {
-						player: k,
-						isFront: this.players[k].yutStatus
-					});
-
 					if(this.players[k].yutStatus){
 						frontStatus++;
 					}
-
-					this.players[k].yutStatus = undefined;
 				});
 
 				var movementAmount = 0;
@@ -209,6 +223,66 @@ class Game{
 					case 3: movementAmount = -1; //뒷도(백도)
 					case 4: movementAmount = 4; //윷
 				}
+
+				if(movementAmount === 4 || movementAmount === 5) movementPoint++;
+
+				broadcastPacket('yut result', {
+					amount: movementAmount
+					players: Object.keys(this.players).map((k) => this.players[k].yutStatus)
+				});
+
+				Object.keys(this.players).forEach((k) => {
+					this.players[k].yutStatus = undefined;
+				});
+
+				var turnPlayer = Object.keys(this.players)[turn];
+				turnPlayer.socket.emit('select piece', {
+					data: turnPlayer.getAvailablePieces().map((v) => {
+						return {
+							id: v.pieceId,
+							pos: v.pos
+						};
+					})
+				});
+
+				var waitAmount = 0;
+
+				if(turnPlayer.getAvailablePieces().length <= 0){
+					handleWin();
+					return;
+				}else if(turnPlayer.getAvailablePieces().length === 1){
+					turnPlayer.selectedPiece = turnPlayer.getAvailablePieces()[0].pieceIndex;
+				}
+
+				while(turnPlayer.selectedPiece !== undefined){
+					sleep(500);
+					waitAmount++;
+					if(waitAmount > 20){
+						turnPlayer.selectedPiece = Math.round(Math.random());
+						break;
+					}
+				}
+
+				if(turnPlayer.pieces[turnPlayer.selectedPiece] === undefined){
+					turnPlayer.selectedPiece = turnPlayer.getAvailablePieces()[0].pieceIndex;
+				}
+
+				var piece = turnPlayer.pieces[turnPlayer.selectedPiece];
+				while(movementAmount > 1){
+					var currTile = this.map[piece.pos];
+					var nextTile = currTile.getPass(piece.movementStack.slice(-1).pop());
+					piece.pos = nextTile.getId();
+					piece.movementStack.push(piece.pos);
+					if(piece.pos === 1){
+						piece.finished = true;
+						broadcastPacket('finished piece', {
+							id: piece.pieceIndex
+						});
+						break;
+					}
+					sleep(1000);
+				}
+				movementPoint--;
 			}
 
 			this.turn++;
