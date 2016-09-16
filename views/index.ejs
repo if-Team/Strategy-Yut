@@ -11,8 +11,47 @@
 		<meta property="og:type" content="game">
 		<meta property="og:url" content="https://syut.iftm.xyz/">
 		<meta property="og:image" content="">
+		<meta name="theme-color" content="#ff9800">
 
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+		<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="/manifest.json">
+		<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#ff9800">
+		<link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css">
+
+		<script src="/bootstrap/dist/js/bootstrap.min.js"></script>
 	</head>
 	<body>
+		<div class="row">
+			<div class="col-md-9 col-xs-12">
+				<canvas id="canvas" class=""></canvas>
+				<canvas id="select-result"></canvas>
+			</div>
+
+			<div class="col-md-3 col-xs-12">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#all">전체</a></li>
+					<% if(permission){ %>
+						<li><a data-toggle="tab" href="#team">팀</a></li>
+					<% } %>
+				</ul>
+
+				<div class="tab-content">
+					<% if(permission){ %>
+						<div id="team" class="tab-pade fade">
+							<ul id="team-chatting">
+							</ul>
+						</div>
+					<% } %>
+					<div id="all" class="tab-pane fade active">
+						<ul id="all-chatting">
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+		</div>
 	</body>
 </html>

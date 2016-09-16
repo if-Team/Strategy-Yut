@@ -85,6 +85,7 @@ class Player{
 		this.socket = undefined;
 		this.yutStatus = undefined;
 		this.selectedPiece = undefined;
+		this.lastMovement = 0;
 	}
 
 	getAvailablePieces(){
@@ -101,6 +102,12 @@ class Piece{
 		this.movementStack = [0];
 	}
 }
+var colors = {
+	0: "#f44336"
+	1: "#ffc107",
+	2: "#009688",
+	3: "#03a9f4"
+};
 
 class Game{
 	constructor(){
@@ -132,7 +139,7 @@ class Game{
 		this.players = {};
 		for(var i = 0; i < 4; i++){
 			var playerName = registeredPlayers.shift();
-			this.players[playerName] = new Player(playerName, i % 2);
+			this.players[playerName] = new Player(playerName, i % 2, colors[i]);
 		}
 		this.turn = 0;
 		this.gameLog = ["NEW GAME!"];
@@ -262,13 +269,15 @@ class Game{
 				});
 
 				var turnPlayer = Object.keys(this.players)[this.turn];
+				var groupnizable = (turnPlayer.getAvailablePieces().length === 2) && (turnPlayer.pieces[0].pos === turnPlayer.pieces[1].pos) && turnPlayer.pieces[0].pos !== 0;
 				if(turnPlayer.socket !== undefined) turnPlayer.socket.emit('select piece', {
 					data: turnPlayer.getAvailablePieces().map((v) => {
 						return {
 							id: v.pieceId,
 							pos: v.pos
 						};
-					})
+					}),
+					groupnizable: groupnizable
 				});
 
 				var waitAmount = 0;
@@ -289,12 +298,19 @@ class Game{
 					}
 				}
 
-				if(turnPlayer.pieces[turnPlayer.selectedPiece] === undefined){
+				if(!(turnPlayer.selectedPiece === 2 && groupnizable) && turnPlayer.pieces[turnPlayer.selectedPiece] === undefined){
 					turnPlayer.selectedPiece = turnPlayer.getAvailablePieces()[0].pieceIndex;
 				}
 
+				var group = (turnPlayer.selectedPiece === 2);
+
 				var piece = turnPlayer.pieces[turnPlayer.selectedPiece];
-				var handleMovement = (nextTile) => {
+				if(group) piece = turnPlayer.pieces[(turnPlayer.lastMovement === 0) ? 1 : 0];
+				var anotherPiece = turnPlayer.pieces.filter((v) => {
+					return v.pieceIndex !== piece.pieceIndex;
+				})[0];
+
+				var handleMovement = (nextTile, piece) => {
 					piece.pos = nextTile.getId();
 					piece.movementStack.push(piece.pos);
 					this.broadcastPacket('piece move', {
@@ -314,16 +330,19 @@ class Game{
 
 				while(movementAmount > 1){
 					let currTile = this.map[piece.pos];
-					if(handleMovement(currTile.getPass(piece.movementStack.slice(-1).pop()))) break;
+					if(group) handleMovement(currTile.getBack(piece.movementStack.slice(-1).pop()), anotherPiece);
+					if(handleMovement(currTile.getPass(piece.movementStack.slice(-1).pop()), piece)) break;
 					movementAmount--;
 					sleep(1000);
 				}
 
 				var currTile = this.map[piece.pos];
 				if(movementAmount === -1){
-					handleMovement(currTile.getBack(piece.movementStack.slice(-1).pop()));
+					handleMovement(currTile.getBack(piece.movementStack.slice(-1).pop()), piece);
+					if(group) handleMovement(currTile.getBack(piece.movementStack.slice(-1).pop()), anotherPiece);
 				}else if(movementAmount === 1){
-					handleMovement(currTile.getConnected(piece.movementStack.slice(-1).pop()));
+					handleMovement(currTile.getConnected(piece.movementStack.slice(-1).pop()), piece);
+					if(group) handleMovement(currTile.getBack(piece.movementStack.slice(-1).pop()), anotherPiece);
 				}
 
 				if(piece.pos !== 0){
@@ -341,6 +360,8 @@ class Game{
 					this.handleWin(turnPlayer);
 					return;
 				}
+
+				if(!group) turnPlayer.lastMovement = piece.pieceIndex;
 				movementPoint--;
 			}
 

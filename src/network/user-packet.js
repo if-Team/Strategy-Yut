@@ -1,5 +1,5 @@
 'use strict';
-var packet = require('./packet');
+var Packet = require('./packet');
 
 class UserPacket extends Packet{
 	constructor(name, onread){
