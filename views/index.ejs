@@ -20,13 +20,22 @@
 		<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#ff9800">
 		<link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css">
 
-		<script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+		<style>
+			html {
+				overflow-x: hidden;
+				overflow-y: auto;
+			}
+
+			canvas {
+				display: block;
+			}
+		</style>
 	</head>
 	<body>
 		<div class="row">
 			<div class="col-md-9 col-xs-12">
-				<canvas id="canvas" class=""></canvas>
-				<canvas id="select-result"></canvas>
+				<canvas id="canvas" style="width: 100%; height: 80vh; background: #202020"></canvas>
+				<canvas id="select-result" style="width: 100%; height: 20vh; background: #00C0A0"></canvas>
 			</div>
 
 			<div class="col-md-3 col-xs-12">
@@ -34,7 +43,9 @@
 					<li class="active"><a data-toggle="tab" href="#all">전체</a></li>
 					<% if(permission){ %>
 						<li><a data-toggle="tab" href="#team">팀</a></li>
+						<li><a data-toggle="tab" href="#select">선택</a></li>
 					<% } %>
+					<li><a data-toggle="tab" href="#status">상황</a></li>
 				</ul>
 
 				<div class="tab-content">
@@ -42,6 +53,9 @@
 						<div id="team" class="tab-pade fade">
 							<ul id="team-chatting">
 							</ul>
+						</div>
+
+						<div id="select" class="tab-pade fade">
 						</div>
 					<% } %>
 					<div id="all" class="tab-pane fade active">
@@ -51,7 +65,16 @@
 				</div>
 			</div>
 		</div>
-		<div class="row">
-		</div>
+
+		<% if(permission){ %>
+			<div class="row" id="choices">
+			</div>
+		<% } %>
+
+		<script src="/jquery/dist/jquery.min.js"></script>
+		<script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+		<script src="/socket.io-client/socket.io.js"></script>
+		<script src="/resources/js/board.js"></script>
+		<script src="/resources/js/render.js"></script>
 	</body>
 </html>

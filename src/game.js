@@ -78,8 +78,9 @@ class CenterTile extends Tile{
 }
 
 class Player{
-	constructor(name, teamIndex){
+	constructor(name, teamIndex, color){
 		this.name = name;
+		this.color = color;
 		this.teamIndex = teamIndex;
 		this.pieces = [new Piece(this, 0), new Piece(this, 1)];
 		this.socket = undefined;

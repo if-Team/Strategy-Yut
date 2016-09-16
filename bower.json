@@ -13,7 +13,9 @@
   ],
   "dependencies": {
     "semantic": "semantic-ui#^2.1.8",
-    "mdi": "^1.6.50"
+    "mdi": "^1.6.50",
+    "bootstrap": "^3.3.7",
+    "socket.io-client": "socketio/socket.io-client#^1.4.8"
   },
   "homepage": "https://github.com/if-Team/Strategy-Yut",
   "private": true,
