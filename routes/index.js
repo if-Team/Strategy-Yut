@@ -71,11 +71,18 @@ router.get('/piece/:color/for/:id', (req, res, next) => {
 			ctx.fillText(id, 512, 512);
 			canvas.toBuffer((err, buf) => {
 				if(err){
+					res.status(400).json({
+						error: 1
+					});
 					return;
 				}
 				res.status(200).set('Content-Type', 'image/png').send(buf)
 			});
-		}catch(e){}
+		}catch(e){
+			res.status(400).json({
+				error: 1
+			});
+		}
 	}else{
 		fs.createReadStream(path.join(__dirname, '..', 'resources', 'img', 'piece-base.svg')).pipe(res);
 	}
