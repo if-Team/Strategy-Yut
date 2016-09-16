@@ -19,6 +19,9 @@
 		<link rel="manifest" href="/manifest.json">
 		<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#ff9800">
 		<link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css">
+		<link rel="stylesheet" href="/NanumBarunGothic/nanumbarungothic.css">
+		<link rel="stylesheet" href="/resources/css/koverwatch.css">
+		<link rel="stylesheet" href="/mdi/css/materialdesignicons.min.css">
 
 		<style>
 			html {
@@ -26,10 +29,32 @@
 				overflow-y: auto;
 			}
 
+			* {
+				font-family: 'Nanum Barun Gothic' !important;
+			}
+
 			canvas {
 				display: block;
 			}
+
+			.chat {
+				padding: 0;
+				height: calc(100vh - 100px);
+				overflow: auto;
+			}
+
+			.chat li {
+				list-style: none;
+				padding: 0;
+				padding-right: 10px;
+				padding-bottom: 5px;
+				border-bottom: solid 1px #AAA;
+				margin-top: 5px;
+			}
 		</style>
+		<script>
+			var permission = <%= permission %>;
+		</script>
 	</head>
 	<body>
 		<div class="row">
@@ -50,17 +75,32 @@
 
 				<div class="tab-content">
 					<% if(permission){ %>
-						<div id="team" class="tab-pade fade">
-							<ul id="team-chatting">
+						<div id="team" class="tab-pade fade in">
+							<ul id="team-chatting" class="chat">
 							</ul>
 						</div>
 
-						<div id="select" class="tab-pade fade">
+						<div id="select" class="tab-pade fade in">
 						</div>
 					<% } %>
-					<div id="all" class="tab-pane fade active">
-						<ul id="all-chatting">
+					<div id="status" class="tab-pane fade in">
+					</div>
+
+					<div id="all" class="tab-pane fade in active">
+						<ul id="all-chatting" class="chat">
 						</ul>
+						<div>
+							<form onsubmit="sendChatAll(); return false;">
+								<div class="input-group">
+									<input type="text" id="all-content" class="form-control" placeholder="채팅 보내기.." maxlength="500">
+									<span class="input-group-btn">
+										<button type="submit" class="btn btn-secondary">
+											<i class="mdi mdi-send"></i>
+										</button>
+									</span>
+								</div>
+							</form>
+						</div>
 					</div>
 				</div>
 			</div>

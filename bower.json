@@ -16,7 +16,8 @@
     "mdi": "^1.6.50",
     "bootstrap": "^3.3.7",
     "socket.io-client": "socketio/socket.io-client#^1.4.8",
-    "tween.js": "tweenjs/tween.js#^16.3.5"
+    "tween.js": "tweenjs/tween.js#^16.3.5",
+    "NanumBarunGothic": "^1.0.0"
   },
   "homepage": "https://github.com/if-Team/Strategy-Yut",
   "private": true,

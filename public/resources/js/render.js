@@ -17,7 +17,10 @@ var players = {};
 var teams = {};
 var socket = io();
 
-socket.emit('status');
+var allchat = $('#all-chatting');
+var teamchat = $('#team-chatting');
+var allcontent = $('#all-content');
+
 socket.on('status', function(data){
 	game = data;
 	game.forEach(function(v){
@@ -40,6 +43,76 @@ socket.on('status', function(data){
 
 	pieceTargets = drawnPieces.slice();
 });
+
+socket.on('yut result', function(data){
+
+});
+
+socket.on('select piece', function(data){
+
+});
+
+socket.on('throw yut', function(data){
+
+});
+
+socket.on('chat team', function(data){
+
+});
+
+socket.on('chat all', function(data){
+	addToAllChat(data);
+});
+
+socket.on('finished piece', function(data){
+
+});
+
+socket.on('piece move', function(data){
+
+});
+
+socket.on('game win', function(data){
+
+});
+
+socket.on('log all', function(data){
+	data.forEach(function(v){
+		addToAllChat(v);
+	});
+});
+
+socket.on('log team', function(data){
+	data.forEach(function(v){
+		addToTeamChat(v);
+	});
+});
+
+socket.emit('status');
+socket.emit('log all');
+if(permission) socket.emit('log team');
+
+
+function addToAllChat(text){
+	if(text === 'NEW GAME!'){
+		var newGame = document.createElement('li');
+		newGame.innerHTML = '<img src="/resources/img/new-game.png" style="width: 100%">';
+		var ganbaruzo = document.createElement('li');
+		ganbaruzo.innerHTML = '<img src="/resources/img/ganbaruzo.jpg" style="width: 100%">'
+
+		allchat.append(newGame).append(ganbaruzo);
+		return;
+	}
+
+	var li = $(document.createElement('li'));
+	li.text(text);
+	allchat.append(li);
+}
+
+function sendChatAll(){
+	socket.emit('chat all', allcontent.val());
+	allcontent.val('');
+}
 
 function readBoard(){
 	var visited = [];

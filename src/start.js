@@ -81,5 +81,10 @@ MongoClient.connect(url, (err, client) => {
 		socketEvents.forEach((v) => {
 			new v().listenToSocket(socket);
 		});
+
+		var socketId = game.addSocket(socket);
+		socket.on('disconnect', () => {
+			game.removeSocket(socketId);
+		});
 	});
 });

@@ -4,6 +4,6 @@ module.exports = [
 	require('./log-all'),
 	require('./log-team'),
 	require('./select-piece'),
-	require('./select-yut'),
-	require('./status')
+	require('./status'),
+	require('./throw-yut')
 ];

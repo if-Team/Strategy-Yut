@@ -1,11 +1,8 @@
-@import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css);
-@import url(https://fonts.googleapis.com/css?family=Ubuntu:300,300italic,400,400italic,500,500italic,700,700italic);
-
 * :not([class^=mdi]){
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
           box-sizing: border-box;
-  font-family: 'Ubuntu', 'Roboto', 'Noto Sans KR', sans-serif !important;
+  font-family: 'Nanum Barun Gothic', sans-serif !important;
 }
 
 .row {
