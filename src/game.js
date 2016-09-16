@@ -35,6 +35,7 @@ class Tile{
 		this.id = id;
 		this.connect = connect;
 		this.pass = pass || connect;
+		this.back = back;
 	}
 
 	getConnected(from){
@@ -47,6 +48,10 @@ class Tile{
 
 	getId(){
 		return this.id;
+	}
+
+	getBack(){
+		return this.back;
 	}
 }
 
@@ -63,6 +68,12 @@ class CenterTile extends Tile{
 	getConnected(from){
 		if(from.getId() === 6) return 14;
 		return 8;
+	}
+
+	getBack(from){
+		if(from === 13 || from === 6) return from;
+		if(from === 14) return 13;
+		if(from === 8) return 6;
 	}
 }
 
@@ -226,7 +237,7 @@ class Game{
 
 				if(movementAmount === 4 || movementAmount === 5) movementPoint++;
 
-				broadcastPacket('yut result', {
+				this.broadcastPacket('yut result', {
 					amount: movementAmount
 					players: Object.keys(this.players).map((k) => this.players[k].yutStatus)
 				});
@@ -248,7 +259,7 @@ class Game{
 				var waitAmount = 0;
 
 				if(turnPlayer.getAvailablePieces().length <= 0){
-					handleWin();
+					this.handleWin();
 					return;
 				}else if(turnPlayer.getAvailablePieces().length === 1){
 					turnPlayer.selectedPiece = turnPlayer.getAvailablePieces()[0].pieceIndex;
@@ -268,20 +279,34 @@ class Game{
 				}
 
 				var piece = turnPlayer.pieces[turnPlayer.selectedPiece];
-				while(movementAmount > 1){
-					var currTile = this.map[piece.pos];
-					var nextTile = currTile.getPass(piece.movementStack.slice(-1).pop());
+				var handleMovement = (nextTile) => {
 					piece.pos = nextTile.getId();
 					piece.movementStack.push(piece.pos);
+					this.broadcastPacket('piece move', {
+						id: piece.pieceIndex,
+						pos: piece.pos
+					});
 					if(piece.pos === 1){
 						piece.finished = true;
-						broadcastPacket('finished piece', {
+						this.broadcastPacket('finished piece', {
 							id: piece.pieceIndex
 						});
 						break;
 					}
+				}
+				while(movementAmount > 1){
+					var currTile = this.map[piece.pos];
+					handleMovement(currTile.getPass(piece.movementStack.slice(-1).pop()));
+					movementAmount--;
 					sleep(1000);
 				}
+
+				if(movementAmount === -1){
+					handleMovement(currTile.getBack(piece.movementStack.slice(-1).pop()));
+				}else if(movementAmount === 1){
+					handleMovement(currTile.getConnected(piece.movementStack.slice(-1).pop()));
+				}
+
 				movementPoint--;
 			}
 
