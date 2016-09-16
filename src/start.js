@@ -79,7 +79,7 @@ MongoClient.connect(url, (err, client) => {
 
 	io.on('connection', (socket) => {
 		socketEvents.forEach((v) => {
-			v.listenToSocket(socket);
+			new v().listenToSocket(socket);
 		});
 	});
 });

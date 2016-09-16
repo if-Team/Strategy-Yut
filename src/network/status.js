@@ -12,7 +12,8 @@ class StatusPacket extends UserPacket{
 						return {
 							pos: v.pos,
 							finished: v.finished,
-							index: v.pieceIndex
+							index: v.pieceIndex,
+							player: k
 						};
 					}),
 					team: p.teamIndex

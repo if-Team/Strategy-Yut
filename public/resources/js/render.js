@@ -10,11 +10,35 @@ var minY = Math.round((_canvas.height() - size) / 2);
 var maxY = minY + size;
 var m = size / 100;
 var game = undefined;
+var pieces = [];
+var drawnPieces = [];
+var pieceTargets = [];
+var players = {};
+var teams = {};
 var socket = io();
 
 socket.emit('status');
-socket.on('status', (data) => {
+socket.on('status', function(data){
 	game = data;
+	game.forEach(function(v){
+		players[v.name] = v;
+		pieces = pieces.concat(v.pieces);
+		if(teams[v.team] === undefined) teams[v.team] = [];
+		teams[v.team].push(v.name);
+	});
+
+	pieces.forEach(function(v, k){
+		drawnPieces[k] = {
+			color: players[v.player].color,
+			player: v.player,
+			index: v.index,
+			finished: v.finished,
+			x: board[v.pos].x,
+			y: board[v.pos].y
+		};
+	});
+
+	pieceTargets = drawnPieces.slice();
 });
 
 function readBoard(){
@@ -55,8 +79,28 @@ function render(){
 	drawBoard();
 }
 
-function pieces(){
+function renderPieces(){
+	var tile = {};
+	drawnPieces.forEach(function(v){
+		if(!tile[v.x]) tile[v.x] = {};
+		if(!tile[v.x][v.y]) tile[v.x][v.y] = [];
+		tile[v.x][v.y].push(v.index + v.player);
+	});
 
+	drawnPieces.forEach(function(v){
+		ctx.fillStyle = v.color;
+		ctx.beginPath();
+		if(tile[v.x][v.y].length <= 1){
+			ctx.arc(minX + v.x * m, minY + v.y * m, radius * m, 0, Math.PI * 2);
+		}else{
+			var amount = 360 / tile[v.x][v.y].length;
+			var start = (tile[v.x][v.y].indexOf(v.index + v.player) * amount);
+			ctx.moveTo(minX + v.x * m, minY + v.y * m);
+			ctx.arc(minX + v.x * m, minY + v.y * m, radius * m, start * Math.PI / 180, (start + amount) * Math.PI / 180);
+		}
+		ctx.fill();
+		ctx.closePath();
+	});
 }
 
 canvas.width = _canvas.width();

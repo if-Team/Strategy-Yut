@@ -5,5 +5,5 @@ module.exports = [
 	require('./log-team'),
 	require('./select-piece'),
 	require('./select-yut'),
-	require('./status');
+	require('./status')
 ];
