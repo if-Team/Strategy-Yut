@@ -118,7 +118,7 @@ socket.on('finished piece', function(data){
 });
 
 socket.on('piece move', function(data){
-	var tween = new TWEEN.Tween(pieces[players[data.player].pieces[data.id].key])
+	new TWEEN.Tween(drawnPieces[players[data.player].pieces[data.id].key])
 	.to({ x: board[data.pos].x, y: board[data.pos].y }, 500)
 	.start();
 });

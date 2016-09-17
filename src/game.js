@@ -271,9 +271,9 @@ class Game{
 				var movementAmount = 0;
 				switch(frontStatus){
 					case 0: movementAmount = 5; break; //모
-					case 1: movementAmount = 3; break; //걸
+					case 1: movementAmount = -1; break; //뒷도(백도)
 					case 2: movementAmount = 2; break; //개
-					case 3: movementAmount = -1; break; //뒷도(백도)
+					case 3: movementAmount = 3; break; //걸
 					case 4: movementAmount = 4; break; //윷
 				}
 
@@ -306,7 +306,7 @@ class Game{
 					data: {
 						data: turnPlayer.getAvailablePieces().map((v) => {
 							return {
-								id: v.pieceId,
+								id: v.pieceIndex,
 								pos: v.pos
 							};
 						}),
@@ -317,7 +317,7 @@ class Game{
 				if(turnPlayer.socket !== undefined) turnPlayer.socket.emit('select piece', {
 					data: turnPlayer.getAvailablePieces().map((v) => {
 						return {
-							id: v.pieceId,
+							id: v.pieceIndex,
 							pos: v.pos
 						};
 					}),
@@ -349,6 +349,7 @@ class Game{
 				})[0];
 
 				var handleMovement = (nextTile, piece) => {
+					var beforePiece = piece.pos;
 					piece.pos = nextTile;
 					nextTile = this.map[nextTile];
 					piece.movementStack.push(piece.pos);
@@ -358,7 +359,7 @@ class Game{
 						pos: piece.pos
 					});
 
-					if(piece.pos === 1){
+					if(piece.pos === 1 && beforePiece !== 1 && beforePiece !== 0){
 						piece.finished = true;
 						this.broadcastPacket('finished piece', {
 							id: piece.pieceIndex,
@@ -377,7 +378,7 @@ class Game{
 
 				while(movementAmount > 0){
 					let currTile = this.map[piece.pos];
-					if(group) handleMovement(currTile.getBack(piece.movementStack.slice(-1).pop()), anotherPiece);
+					if(group) handleMovement(currTile.getPass(piece.movementStack.slice(-1).pop()), anotherPiece);
 					if(handleMovement(currTile.getPass(piece.movementStack.slice(-1).pop()), piece)) break;
 					movementAmount--;
 					sleep(1000);
