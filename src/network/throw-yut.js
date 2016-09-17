@@ -1,8 +1,8 @@
 var PlayerPacket = require('./user-packet');
 
-class SelectYutPacket extends PlayerPacket{
+class ThrowYutPacket extends PlayerPacket{
 	constructor(){
-		super('select yut', (username, socket, data) => {
+		super('throw yut', (username, socket, data) => {
 			if(game.players[username] === undefined) return;
 			if(typeof data !== boolean) return;
 			game.handleThrow(username, data);
@@ -10,4 +10,4 @@ class SelectYutPacket extends PlayerPacket{
 	}
 }
 
-module.exports = SelectYutPacket;
+module.exports = ThrowYutPacket;

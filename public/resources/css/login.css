@@ -1,0 +1,190 @@
+* :not([class^=mdi]){
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  font-family: 'Nanum Barun Gothic', sans-serif !important;
+}
+
+.row {
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 20px;
+}
+
+#top {
+  position: relative;
+  top: 11px
+}
+
+main {
+    padding-left: 2rem;
+    padding-right: 2rem
+}
+
+.section {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+h2 .mdi {
+  font-size: 1.5em
+}
+
+.item .mdi {
+  font-size: 1.5em
+}
+
+.grid {
+  width: 100%;
+  text-align: center;
+}
+/* Footer */
+/*.footer {
+    position: relative;
+    background: #F1F1F1;
+    padding: 24px 0;
+    border-top: 1px solid #d9d9d9;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+*/
+.credit {
+  margin: 0 auto;
+  text-align: center;
+}
+
+.unbold {
+  font-weight: normal;
+  color: black;
+}
+
+.brand.blue.item img {
+  width:40px;
+  height:auto;
+  margin-left:1.5em
+}
+
+@media (min-width: 1200px){
+  .container {
+    width: 1170px;
+  }
+}
+@media (min-width: 992px){
+.container {
+    width: 970px;
+  }
+}
+@media (min-width: 768px){
+.container {
+    width: auto;
+  }
+}
+
+.mobile-only, .desktop-only, .tablet-only {
+  display: none !important;
+}
+
+@media (max-width: 768px ) {
+  .mobile-hidden {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    opacity: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .mobile-only {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .tablet-only {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 991px) {
+  .desktop-only {
+    display: flex !important;
+  }
+}
+
+.mdi {
+  /* Prevention of 'Icons' font */
+  font-family: "Material Design Icons" !important;
+}
+
+.wrap {
+    padding: 5px 0;
+}
+
+.row-container {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.footer .col {
+    padding: 10px 0 20px;
+}
+
+.chalkboard {
+  color: #008000 !important;
+}
+
+body {
+  background-color: #DADADA;
+}
+
+body > .grid {
+  height: 100%;
+}
+
+.image {
+  margin-top: -100px;
+}
+
+.column {
+  margin-top: 37px;
+  max-width: 450px;
+}
+
+.account {
+  min-height: 450px;
+  display: table;
+  width: 100%;
+}
+
+.account-contents {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+@media (max-width: 768px){
+  .account {
+    min-height: initial;
+  }
+
+  .account-layout {
+    margin-top: 50px !important;
+  }
+
+  .account-segment, .account-layout {
+    width: 100vw !important;
+    padding: 0 !important;
+  }
+
+  /* to override !important */
+  div.account-layout > div.account-segment > div.ui.container.account-container {
+    width: 100vw !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  body > .grid {
+    height: initial;
+  }
+
+.footer {
+  top:7.5em
+}

@@ -11,8 +11,131 @@
 		<meta property="og:type" content="game">
 		<meta property="og:url" content="https://syut.iftm.xyz/">
 		<meta property="og:image" content="">
+		<meta name="theme-color" content="#ff9800">
 
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+		<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="/manifest.json">
+		<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#ff9800">
+		<link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css">
+		<link rel="stylesheet" href="/NanumBarunGothic/nanumbarungothic.css">
+		<link rel="stylesheet" href="/resources/css/koverwatch.css">
+		<link rel="stylesheet" href="/mdi/css/materialdesignicons.min.css">
+
+		<style>
+			html {
+				overflow-x: hidden;
+				overflow-y: auto;
+			}
+
+			* {
+				font-family: 'Nanum Barun Gothic' !important;
+			}
+
+			canvas {
+				display: block;
+			}
+
+			.chat {
+				padding: 0;
+				height: calc(100vh - 100px);
+				overflow: auto;
+			}
+
+			.chat li {
+				list-style: none;
+				padding: 0;
+				padding-right: 10px;
+				padding-bottom: 5px;
+				border-bottom: solid 1px #AAA;
+				margin-top: 5px;
+			}
+		</style>
+		<script>
+			var permission = <%= permission %>;
+			var myName = "<%= username %>";
+		</script>
 	</head>
 	<body>
+		<div class="row">
+			<div class="col-md-9 col-xs-12">
+				<canvas id="canvas" style="width: 100%; height: 80vh; background: #202020"></canvas>
+				<canvas id="select-result" style="width: 100%; height: 20vh; background: #00C0A0"></canvas>
+			</div>
+
+			<div class="col-md-3 col-xs-12">
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#all">전체</a></li>
+					<% if(permission){ %>
+						<li><a data-toggle="tab" href="#team">팀</a></li>
+						<li><a data-toggle="tab" href="#select">선택</a></li>
+					<% } %>
+					<li><a data-toggle="tab" href="#status">상황</a></li>
+				</ul>
+
+				<div class="tab-content">
+					<% if(permission){ %>
+						<div id="team" class="tab-pane fade">
+							<ul id="team-chatting" class="chat">
+							</ul>
+							<div>
+								<form onsubmit="sendChatTeam(); return false;">
+									<div class="input-group">
+										<input type="text" id="team-content" class="form-control" placeholder="팀 채팅 보내기.." maxlength="500" autocomplete="off">
+										<span class="input-group-btn">
+											<button type="submit" class="btn btn-secondary">
+												<i class="mdi mdi-send"></i>
+											</button>
+										</span>
+									</div>
+								</form>
+							</div>
+						</div>
+
+						<div id="select" class="tab-pane fade">
+							<canvas id="select-canvas" style="display: block; width: 100%; height: 100px;"></canvas>
+							<div id="select-view">
+							</div>
+						</div>
+					<% } %>
+					<div id="status" class="tab-pane fade">
+						<ul id="player-list">
+							<h3>Players</h3>
+						</ul>
+					</div>
+
+					<div id="all" class="tab-pane fade active in">
+						<ul id="all-chatting" class="chat">
+						</ul>
+						<div>
+							<form onsubmit="sendChatAll(); return false;">
+								<div class="input-group">
+									<input type="text" id="all-content" class="form-control" placeholder="전체 채팅 보내기.." maxlength="500" autocomplete="off">
+									<span class="input-group-btn">
+										<button type="submit" class="btn btn-secondary">
+											<i class="mdi mdi-send"></i>
+										</button>
+									</span>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<% if(permission){ %>
+			<div class="row" id="choices">
+			</div>
+		<% } %>
+
+		<script src="/jquery/dist/jquery.min.js"></script>
+		<script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+		<script src="/socket.io-client/socket.io.js"></script>
+		<script src="/tween.js/src/Tween.js"></script>
+		<script src="/resources/js/board.js"></script>
+		<script src="/resources/js/timer.js"></script>
+		<script src="/resources/js/render.js"></script>
 	</body>
 </html>

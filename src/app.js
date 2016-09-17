@@ -35,6 +35,12 @@ app.use(cookieParser());
 app.use(global.session);
 app.use(preventInjection);
 
+app.use((req, res, next) => {
+	res.locals.permission = req.session.permission;
+	res.locals.username = req.session.username;
+	next();
+});
+
 app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use(express.static(path.join(__dirname, '..', 'bower_components')));
 

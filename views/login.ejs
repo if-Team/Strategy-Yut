@@ -4,22 +4,22 @@
 		<meta charset="utf-8">
 		<meta http-equiv="x-ua-compatible" content="ie=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-		<title>Yutnori - 로그인</title>
+		<title>if-Strategy - 로그인</title>
 		<!-- jQuery -->
-		<script src="bower_components/jquery/dist/jquery.min.js"></script>
+		<script src="/jquery/dist/jquery.min.js"></script>
 
 		<!-- semantic-ui -->
-		<link href="bower_components/semantic/dist/semantic.min.css" rel="stylesheet">
-		<script src="bower_components/semantic/dist/semantic.min.js"></script>
+		<link href="/semantic/dist/semantic.min.css" rel="stylesheet">
+		<script src="/semantic/dist/semantic.min.js"></script>
+
+		<!-- nanum barun gothic -->
+		<link href="/NanumBarunGothic/nanumbarungothic.css" media="all" rel="stylesheet">
 
 		<!-- mdi -->
-		<link href="bower_components/mdi/css/materialdesignicons.min.css" media="all" rel="stylesheet">
+		<link href="/mdi/css/materialdesignicons.min.css" media="all" rel="stylesheet">
 
 		<!--etc.. -->
-		<link href="css/login.css" rel="stylesheet">
-		<link href="css/common.css" rel="stylesheet">
-		<link href="css/table.css" rel="stylesheet">
-		<script src="js/ui.js"></script>
+		<link href="resources/css/login.css" rel="stylesheet">
 		<script>
 			$(document)
 				.ready(function() {
@@ -53,31 +53,44 @@
 	</head>
 
 	<body>
+		<div class="ui grid page pusher">
+			<div class="tablet computer only row">
+				<nav class="ui fixed menu navbar" role="navigation">
+					<a class="brand blue item">
+						<img src="/resources/img/logo.svg" alt="logo">
+						<span style="margin-left:1em"><h5>if-Strategy</h5></span>
+					</a>
+				</nav>
+			</div>
+
+			<div class="mobile only narrow row">
+				<nav class="ui fixed menu navbar">
+					<a class="brand blue item">
+						<img src="/resources/img/logo.svg" alt="logo">
+						<span style="margin-left:1em"><h5>if-Strategy</h5></span>
+					</a>
+				</nav>
+			</div>
+
 			<div class="ui center middle aligned grid account-layout">
 				<div class="segment account-segment" style="width: 100%">
 					<div class="ui two column very relaxed stackable grid centered container account-container">
 						<div class="column">
-							<form class="ui large form">
+							<form class="ui large form" method="post">
 								<div class="ui stacked segment account middle aligned">
 									<div class="account-contents">
-										<h1 class="ui teal image header" style="float:left; font-size:4em;">
+										<h1 class="ui teal image header" style="float:left; font-size:3em;">
 											<div class="content">
-												LOG<span class="unbold">IN</span>
+												SPECTATE<span class="unbold">GAME</span>
 											</div>
 										</h1>
 										<div class="field">
 											<div class="ui left icon input">
 												<i class="mdi mdi-account icon" style="font-size:1em;"></i>
-												<input type="text" name="email" placeholder="이메일 주소">
+												<input type="text" name="name" placeholder="ID">
 											</div>
 										</div>
-										<div class="field">
-											<div class="ui left icon input">
-												<i class="mdi mdi-key icon" style="font-size:1em"></i>
-												<input type="password" name="password" placeholder="비밀번호">
-											</div>
-										</div>
-										<div class="ui fluid large teal submit button">로그인</div>
+										<div class="ui fluid large teal submit button">관전</div>
 									</div>
 								</div>
 							</form>
@@ -88,60 +101,34 @@
 						</div>
 
 						<div class="column">
-							<form class="ui large form">
+							<form class="ui large form" method="post">
 								<div class="ui stacked segment account">
 									<div class="account-contents">
 										<h1 class="ui teal image header" style="float:left; font-size:4em;">
 											<div class="content">
-												SIGN<span class="unbold">IN</span>
+												PLAY<span class="unbold">GAME</span>
 											</div>
 										</h1>
 
 										<div class="field">
 											<div class="ui left icon input">
 												<i class="mdi mdi-account icon" style="font-size:1em"></i>
-												<input type="text" name="name" placeholder="이름">
-											</div>
-										</div>
-
-										<div class="field">
-											<div class="ui left icon input">
-												<i class="mdi mdi-account icon" style="font-size:1em"></i>
-												<input type="text" name="email" placeholder="이메일 주소">
+												<input type="text" name="name" placeholder="ID">
 											</div>
 										</div>
 
 										<div class="field">
 											<div class="ui left icon input">
 												<i class="mdi mdi-key icon" style="font-size:1em"></i>
-												<input type="password" name="password" placeholder="비밀번호">
+												<input type="password" name="pw" placeholder="비밀번호">
 											</div>
 										</div>
 
-										<div class="field">
-											<div class="ui left icon input">
-												<i class="mdi mdi-key icon" style="font-size:1em"></i>
-												<input type="password" name="password-confirm" placeholder="비밀번호 확인">
-											</div>
-										</div>
-										<div class="ui fluid large teal submit button">회원가입</div>
+										<div class="ui fluid large teal submit button">게임 플레이</div>
 									</div>
 								</div>
 							</form>
 						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="ui inverted vertical footer segment" style="top:3em">
-			<div class="ui container">
-				<div class="row-container warp">
-					<div class="credit">
-						<h5 class="ui inverted header">
-							<img src="../public/resources/img/logo.svg" style="width:50px; hight:auto;">
-							<span>Strategy-Yut</span>
-						</h5>
-						<p>copyright(C) if-Team</p>
 					</div>
 				</div>
 			</div>
