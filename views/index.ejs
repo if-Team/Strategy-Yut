@@ -54,6 +54,7 @@
 		</style>
 		<script>
 			var permission = <%= permission %>;
+			var myName = "<%= username %>";
 		</script>
 	</head>
 	<body>
@@ -75,24 +76,42 @@
 
 				<div class="tab-content">
 					<% if(permission){ %>
-						<div id="team" class="tab-pade fade in">
+						<div id="team" class="tab-pane fade">
 							<ul id="team-chatting" class="chat">
 							</ul>
+							<div>
+								<form onsubmit="sendChatTeam(); return false;">
+									<div class="input-group">
+										<input type="text" id="team-content" class="form-control" placeholder="팀 채팅 보내기.." maxlength="500" autocomplete="off">
+										<span class="input-group-btn">
+											<button type="submit" class="btn btn-secondary">
+												<i class="mdi mdi-send"></i>
+											</button>
+										</span>
+									</div>
+								</form>
+							</div>
 						</div>
 
-						<div id="select" class="tab-pade fade in">
+						<div id="select" class="tab-pane fade">
+							<canvas id="select-canvas" style="display: block; width: 100%; height: 100px;"></canvas>
+							<div id="select-view">
+							</div>
 						</div>
 					<% } %>
-					<div id="status" class="tab-pane fade in">
+					<div id="status" class="tab-pane fade">
+						<ul id="player-list">
+							<h3>Players</h3>
+						</ul>
 					</div>
 
-					<div id="all" class="tab-pane fade in active">
+					<div id="all" class="tab-pane fade active in">
 						<ul id="all-chatting" class="chat">
 						</ul>
 						<div>
 							<form onsubmit="sendChatAll(); return false;">
 								<div class="input-group">
-									<input type="text" id="all-content" class="form-control" placeholder="채팅 보내기.." maxlength="500">
+									<input type="text" id="all-content" class="form-control" placeholder="전체 채팅 보내기.." maxlength="500" autocomplete="off">
 									<span class="input-group-btn">
 										<button type="submit" class="btn btn-secondary">
 											<i class="mdi mdi-send"></i>
@@ -116,6 +135,7 @@
 		<script src="/socket.io-client/socket.io.js"></script>
 		<script src="/tween.js/src/Tween.js"></script>
 		<script src="/resources/js/board.js"></script>
+		<script src="/resources/js/timer.js"></script>
 		<script src="/resources/js/render.js"></script>
 	</body>
 </html>

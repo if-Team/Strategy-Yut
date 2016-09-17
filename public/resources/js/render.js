@@ -1,4 +1,4 @@
-var _canvas = $('canvas');
+var _canvas = $('#canvas');
 var canvas = _canvas[0];
 var ctx = canvas.getContext('2d');
 var boardThings = [];
@@ -12,14 +12,51 @@ var m = size / 100;
 var game = undefined;
 var pieces = [];
 var drawnPieces = [];
-var pieceTargets = [];
 var players = {};
 var teams = {};
 var socket = io();
+var doRender = true;
 
 var allchat = $('#all-chatting');
 var teamchat = $('#team-chatting');
 var allcontent = $('#all-content');
+var teamcontent = $('#team-content');
+var selectView = $('#select-view');
+var selectCanvas = $('#select-canvas');
+var sCanvas = selectCanvas[0];
+var sCtx = sCanvas.getContext('2d');
+$('#select').css({visibility: 'hidden', display: 'block'});
+sCanvas.width = selectCanvas.width();
+sCanvas.height = selectCanvas.height();
+$('#select').css({visibility: '', display: ''});
+var sMin = sCanvas.width < sCanvas.height ? sCanvas.width : sCanvas.height;
+sCtx.font = 'italic ' + sMin / 2 + 'px koverwatch';
+sCtx.textAlign = 'center';
+sCtx.textBaseline = 'middle';
+
+setInterval(function(){
+	Timer.update();
+	if(Timer.left() > 0){
+		sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
+
+		sCtx.fillStyle = "#f00";
+		sCtx.beginPath();
+		sCtx.moveTo(sCanvas.width / 2, sCanvas.height / 2);
+		sCtx.arc(sCanvas.width / 2, sCanvas.height / 2, sMin / 2 - 5, -Math.PI / 2, (Timer.angle() - 90) * Math.PI / 180, true);
+		sCtx.fill();
+		sCtx.closePath();
+
+		sCtx.fillStyle = "#fff";
+		sCtx.beginPath();
+		sCtx.moveTo(sCanvas.width / 2, sCanvas.height / 2);
+		sCtx.arc(sCanvas.width / 2, sCanvas.height / 2, sMin / 2 - 15, 0, Math.PI * 2, true);
+		sCtx.fill();
+		sCtx.closePath();
+
+		sCtx.fillStyle = '#f00';
+		sCtx.fillText(Math.floor(Timer.left() / 1000), sCanvas.width / 2 - sMin / 20, sCanvas.height / 2);
+	}else sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
+}, 100);
 
 socket.on('status', function(data){
 	game = data;
@@ -31,6 +68,7 @@ socket.on('status', function(data){
 	});
 
 	pieces.forEach(function(v, k){
+		players[v.player].pieces[v.index].key = k;
 		drawnPieces[k] = {
 			color: players[v.player].color,
 			player: v.player,
@@ -40,24 +78,31 @@ socket.on('status', function(data){
 			y: board[v.pos].y
 		};
 	});
-
-	pieceTargets = drawnPieces.slice();
 });
 
 socket.on('yut result', function(data){
+	var html = '<div class="row">';
+	data.players.forEach(function(v){
+		if(v){
+			html += '<img src="/resources/img/yut-stick-front.svg" style="height: 100px">';
+		}else html += '<img src="/resources/img/yut-stick-back.svg" style="height: 100px">';
+	});
 
 });
 
 socket.on('select piece', function(data){
-
+	addSelectView(data);
+	Timer.start(20000, function(){
+		removeSelectView();
+	});
 });
 
-socket.on('throw yut', function(data){
-
+socket.on('throw yut', function(){
+	addThrowView();
 });
 
 socket.on('chat team', function(data){
-
+	addToTeamChat(data);
 });
 
 socket.on('chat all', function(data){
@@ -69,7 +114,9 @@ socket.on('finished piece', function(data){
 });
 
 socket.on('piece move', function(data){
-
+	var tween = new TWEEN.Tween(pieces[players[data.player].pieces[data.id].key])
+	.to({ x: board[data.pos].x, y: board[data.pos].y }, 500)
+	.start();
 });
 
 socket.on('game win', function(data){
@@ -92,26 +139,84 @@ socket.emit('status');
 socket.emit('log all');
 if(permission) socket.emit('log team');
 
-
-function addToAllChat(text){
-	if(text === 'NEW GAME!'){
-		var newGame = document.createElement('li');
-		newGame.innerHTML = '<img src="/resources/img/new-game.png" style="width: 100%">';
-		var ganbaruzo = document.createElement('li');
-		ganbaruzo.innerHTML = '<img src="/resources/img/ganbaruzo.jpg" style="width: 100%">'
-
-		allchat.append(newGame).append(ganbaruzo);
-		return;
-	}
-
-	var li = $(document.createElement('li'));
-	li.text(text);
-	allchat.append(li);
+function addThrowView(){
+	selectView.innerHTML = '<div class="row">' +
+		'<button type="button" onclick="throwYut(true)" class="btn"><img src="/resources/img/yut-stick-front.svg" style="height: 100px;"></button>' +
+		'<button type="button" onclick="throwYut(false)" class="btn"><img src="/resources/img/yut-stick-back.svg" style="height: 100px;"></button>' +
+	'</div>';
 }
+
+function addSelectView(data){
+	doRender = false;
+	var myColor = players[username].color;
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	drawBoard();
+	players[myName].pieces.forEach(function(v){
+		var img = new Image();
+		var obj = drawnPieces[v.key];
+		img.onload = function(){
+			ctx.drawImage(img, (minX + obj.x - radius) * m, (minY + obj.y - radius) * m, 2 * radius * m, 2 * radius * m);
+		};
+		img.src = '/piece/' + myColor + '/for/' + v.id;
+	});
+
+	var htmlString = '<div class="row">';
+	data.forEach(function(v){
+		htmlString += '<button type="button" onclick="selectPiece(' + v.id + ')" class="btn"><img src="/piece/' + myColor + '/for/' + v.id + '" style="height: 100px;"></button>'
+	});
+	if(data.groupnizable) htmlString += '</div><div class="row">' +
+		'<button type="button" onclick="selectPiece(2)" class="btn">' +
+			'<img src="/piece/' + myColor + '/for/0" style="height: 100px;">' +
+			'<img src="/piece/' + myColor + '/for/1" style="height: 100px;"></button>'
+
+	selectView.innerHTML = htmlString + '</div>';
+}
+
+function selectPiece(num){
+	Timer.stop();
+	removeSelectView();
+	socket.emit('select piece', num);
+}
+
+function removeSelectView(){
+	doRender = true;
+	selectView.innerHTML = '';
+}
+
+function throwYut(isFront){
+	socket.emit('throw yut', isFront);
+	removeSelectView();
+}
+
+var addChat = function(board){
+	return function(text){
+		if(text === 'NEW GAME!'){
+			var newGame = document.createElement('li');
+			newGame.innerHTML = '<img src="/resources/img/new-game.png" style="width: 100%">';
+			var ganbaruzo = document.createElement('li');
+			ganbaruzo.innerHTML = '<img src="/resources/img/ganbaruzo.jpg" style="width: 100%">';
+
+			board.append(newGame).append(ganbaruzo);
+			return;
+		}
+
+		var li = $(document.createElement('li'));
+		li.text(text);
+		board.append(li);
+	};
+};
+
+var addToAllChat = addChat(allchat);
+var addToTeamChat = addChat(teamchat);
 
 function sendChatAll(){
 	socket.emit('chat all', allcontent.val());
 	allcontent.val('');
+}
+
+function sendChatTeam(){
+	socket.emit('chat team', teamcontent.val());
+	teamcontent.val('');
 }
 
 function readBoard(){
@@ -147,9 +252,13 @@ function drawBoard(){
 	});
 }
 
-function render(){
+function render(time){
+	if(!doRender) return;
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	drawBoard();
+	renderPieces();
+	TWEEN.update(time);
+	requestAnimationFrame(render);
 }
 
 function renderPieces(){
@@ -161,6 +270,7 @@ function renderPieces(){
 	});
 
 	drawnPieces.forEach(function(v){
+		if(v.finished) return;
 		ctx.fillStyle = v.color;
 		ctx.beginPath();
 		if(tile[v.x][v.y].length <= 1){
@@ -178,5 +288,7 @@ function renderPieces(){
 
 canvas.width = _canvas.width();
 canvas.height = _canvas.height();
+
 readBoard();
+
 render();

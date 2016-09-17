@@ -37,6 +37,7 @@ app.use(preventInjection);
 
 app.use((req, res, next) => {
 	res.locals.permission = req.session.permission;
+	res.locals.username = req.session.username;
 	next();
 });
 

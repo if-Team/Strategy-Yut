@@ -66,8 +66,9 @@ router.get('/piece/:color/for/:id', (req, res, next) => {
 			ctx.clearRect(0, 0, 1024, 1024);
 			ctx.beginPath();
 			ctx.arc(512, 512, 512, 0, Math.PI * 2);
-			ctx.stroke();
+			ctx.fill();
 
+			ctx.fillStyle = '#202020';
 			ctx.fillText(id, 512, 512);
 			canvas.toBuffer((err, buf) => {
 				if(err){

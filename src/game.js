@@ -304,7 +304,7 @@ class Game{
 				while(turnPlayer.selectedPiece !== undefined){
 					sleep(500);
 					waitAmount++;
-					if(waitAmount > 20){
+					if(waitAmount > 40){
 						turnPlayer.selectedPiece = Math.round(Math.random());
 						break;
 					}
@@ -326,6 +326,7 @@ class Game{
 					piece.pos = nextTile.getId();
 					piece.movementStack.push(piece.pos);
 					this.broadcastPacket('piece move', {
+						player: turnPlayer.name,
 						id: piece.pieceIndex,
 						pos: piece.pos
 					});
@@ -333,7 +334,8 @@ class Game{
 					if(piece.pos === 1){
 						piece.finished = true;
 						this.broadcastPacket('finished piece', {
-							id: piece.pieceIndex
+							id: piece.pieceIndex,
+							player: turnPlayer.name
 						});
 						return true;
 					}
@@ -385,7 +387,7 @@ class Game{
 	}
 
 	getAnotherTeamPlayer(player){
-		return this.players.filter((v) => {
+		return Object.keys(this.players).map((v) => this.players[v]).filter((v) => {
 			return v.teamIndex === player.teamIndex && v.name !== player.name;
 		})[0];
 	}
