@@ -152,7 +152,7 @@ function addThrowView(){
 
 function addSelectView(data){
 	doRender = false;
-	var myColor = players[myName].color;
+	var myColor = players[myName].color.substr(1);
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	drawBoard();
 	players[myName].pieces.forEach(function(v){

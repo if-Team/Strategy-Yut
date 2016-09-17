@@ -56,7 +56,7 @@ router.get('/logout', (req, res, next) => {
 
 router.get('/piece/:color/for/:id', (req, res, next) => {
 	var id = req.params.id.toString().charAt(0);
-	var color = req.params.color;
+	var color = '#' + req.params.color;
 	if(!/^#[0-9A-F]{6,6}$/.test(color)) color = '#00C0A0';
 
 	if(Canvas !== undefined){
