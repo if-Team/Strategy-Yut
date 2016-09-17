@@ -10,10 +10,6 @@ body {
   background-size: cover;
 }
 
-div {
-  opacity: 10 !important;
-}
-
 .row {
     margin-left: auto;
     margin-right: auto;
