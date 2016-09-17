@@ -103,14 +103,18 @@ socket.on('throw yut', function(){
 
 socket.on('chat team', function(data){
 	addToTeamChat(data);
+	teamchat.animate({ scrollTop: teamchat[0].scrollHeight}, 100);
 });
 
 socket.on('chat all', function(data){
 	addToAllChat(data);
+	allchat.animate({ scrollTop: allchat[0].scrollHeight}, 100);
 });
 
 socket.on('finished piece', function(data){
-
+	var piece = players[data.player].pieces[data.id];
+	piece.finished = true;
+	drawnPieces[piece.key].finished = true;
 });
 
 socket.on('piece move', function(data){
@@ -140,7 +144,7 @@ socket.emit('log all');
 if(permission) socket.emit('log team');
 
 function addThrowView(){
-	selectView.innerHTML = '<div class="row">' +
+	selectView[0].innerHTML = '<div class="row">' +
 		'<button type="button" onclick="throwYut(true)" class="btn"><img src="/resources/img/yut-stick-front.svg" style="height: 100px;"></button>' +
 		'<button type="button" onclick="throwYut(false)" class="btn"><img src="/resources/img/yut-stick-back.svg" style="height: 100px;"></button>' +
 	'</div>';
@@ -148,7 +152,7 @@ function addThrowView(){
 
 function addSelectView(data){
 	doRender = false;
-	var myColor = players[username].color;
+	var myColor = players[myName].color;
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	drawBoard();
 	players[myName].pieces.forEach(function(v){
@@ -161,7 +165,7 @@ function addSelectView(data){
 	});
 
 	var htmlString = '<div class="row">';
-	data.forEach(function(v){
+	data.data.forEach(function(v){
 		htmlString += '<button type="button" onclick="selectPiece(' + v.id + ')" class="btn"><img src="/piece/' + myColor + '/for/' + v.id + '" style="height: 100px;"></button>'
 	});
 	if(data.groupnizable) htmlString += '</div><div class="row">' +
@@ -169,7 +173,7 @@ function addSelectView(data){
 			'<img src="/piece/' + myColor + '/for/0" style="height: 100px;">' +
 			'<img src="/piece/' + myColor + '/for/1" style="height: 100px;"></button>'
 
-	selectView.innerHTML = htmlString + '</div>';
+	selectView[0].innerHTML = htmlString + '</div>';
 }
 
 function selectPiece(num){
@@ -180,7 +184,7 @@ function selectPiece(num){
 
 function removeSelectView(){
 	doRender = true;
-	selectView.innerHTML = '';
+	selectView[0].innerHTML = '';
 }
 
 function throwYut(isFront){

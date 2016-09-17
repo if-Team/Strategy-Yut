@@ -82,9 +82,17 @@ MongoClient.connect(url, (err, client) => {
 			new v().listenToSocket(socket);
 		});
 
-		var socketId = game.addSocket(socket);
-		socket.on('disconnect', () => {
-			game.removeSocket(socketId);
-		});
+		var username = socket.handshake.session.username;
+		if(socket.handshake.session.permission && game.players[username] !== undefined){
+			game.attachPlayerAndSocket(username, socket);
+			socket.on('disconnect', () => {
+				game.detachPlayerAndSocket(username, socket);
+			});
+		}else{
+			var socketId = game.addSocket(socket);
+			socket.on('disconnect', () => {
+				game.removeSocket(socketId);
+			});
+		}
 	});
 });

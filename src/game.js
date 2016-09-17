@@ -160,10 +160,18 @@ class Game{
 			1: []
 		};
 		this.sockets = {};
+		this.status = 'wait-for-player';
+		this.processTurn();
 	}
 
 	attachPlayerAndSocket(playerName, socket){
 		this.players[playerName].socket = socket;
+		if(this.status === 'wait-for-player') return;
+		if(typeof this.status === 'string') socket.emit(this.status);
+		else{
+			if(this.status.name !== undefined && this.status.name !== playerName) return;
+			socket.emit(this.status.content, this.status.data);
+		}
 	}
 
 	detachPlayerAndSocket(playerName, socket){
@@ -181,7 +189,7 @@ class Game{
 	}
 
 	getPieceInTile(piecePosition){
-		this.players.map((v) => v.pieces).map((v) => {
+		return Object.keys(this.players).map((v) => this.players[v].pieces).map((v) => {
 			return v.filter((v) => {
 				return !v.finished && v.pos === piecePosition;
 			});
@@ -249,7 +257,7 @@ class Game{
 				sleep(500);
 			}
 			var movementPoint = 1;
-			while(movementPoint !== 1){
+			while(movementPoint >= 1){
 				this.requestThrowYut();
 
 				var frontStatus = 0;
@@ -280,17 +288,8 @@ class Game{
 					this.players[k].yutStatus = undefined;
 				});
 
-				var turnPlayer = Object.keys(this.players)[this.turn];
+				var turnPlayer = this.players[Object.keys(this.players)[this.turn]];
 				var groupnizable = (turnPlayer.getAvailablePieces().length === 2) && (turnPlayer.pieces[0].pos === turnPlayer.pieces[1].pos) && turnPlayer.pieces[0].pos !== 0;
-				if(turnPlayer.socket !== undefined) turnPlayer.socket.emit('select piece', {
-					data: turnPlayer.getAvailablePieces().map((v) => {
-						return {
-							id: v.pieceId,
-							pos: v.pos
-						};
-					}),
-					groupnizable: groupnizable
-				});
 
 				var waitAmount = 0;
 
@@ -301,14 +300,41 @@ class Game{
 					turnPlayer.selectedPiece = turnPlayer.getAvailablePieces()[0].pieceIndex;
 				}
 
-				while(turnPlayer.selectedPiece !== undefined){
+				this.status = {
+					name: turnPlayer,
+					content: 'select piece',
+					data: {
+						data: turnPlayer.getAvailablePieces().map((v) => {
+							return {
+								id: v.pieceId,
+								pos: v.pos
+							};
+						}),
+						groupnizable: groupnizable
+					}
+				};
+
+				if(turnPlayer.socket !== undefined) turnPlayer.socket.emit('select piece', {
+					data: turnPlayer.getAvailablePieces().map((v) => {
+						return {
+							id: v.pieceId,
+							pos: v.pos
+						};
+					}),
+					groupnizable: groupnizable
+				});
+
+				var selectWait = 0;
+				while(turnPlayer.selectedPiece === undefined){
 					sleep(500);
-					waitAmount++;
-					if(waitAmount > 40){
+					selectWait++;
+					if(selectWait > 40){
 						turnPlayer.selectedPiece = Math.round(Math.random());
 						break;
 					}
 				}
+
+				this.status = 'wait-for-player';
 
 				if(!(turnPlayer.selectedPiece === 2 && groupnizable) && turnPlayer.pieces[turnPlayer.selectedPiece] === undefined){
 					turnPlayer.selectedPiece = turnPlayer.getAvailablePieces()[0].pieceIndex;
@@ -323,7 +349,8 @@ class Game{
 				})[0];
 
 				var handleMovement = (nextTile, piece) => {
-					piece.pos = nextTile.getId();
+					piece.pos = nextTile;
+					nextTile = this.map[nextTile];
 					piece.movementStack.push(piece.pos);
 					this.broadcastPacket('piece move', {
 						player: turnPlayer.name,
@@ -342,6 +369,7 @@ class Game{
 					return false;
 				};
 
+				var currTile = this.map[piece.pos];
 				if(movementAmount >= 1){
 					handleMovement(currTile.getConnected(piece.movementStack.slice(-1).pop()), piece);
 					if(group) handleMovement(currTile.getBack(piece.movementStack.slice(-1).pop()), anotherPiece);
@@ -355,7 +383,6 @@ class Game{
 					sleep(1000);
 				}
 
-				var currTile = this.map[piece.pos];
 				if(movementAmount === -1){
 					handleMovement(currTile.getBack(piece.movementStack.slice(-1).pop()), piece);
 					if(group) handleMovement(currTile.getBack(piece.movementStack.slice(-1).pop()), anotherPiece);
@@ -383,7 +410,7 @@ class Game{
 
 			this.turn++;
 			setTimeout(this.processTurn, 0);
-		});
+		}).run();
 	}
 
 	getAnotherTeamPlayer(player){
@@ -400,6 +427,7 @@ class Game{
 	}
 
 	requestThrowYut(){
+		this.status = 'throw yut';
 		this.broadcastPacketToPlayers('throw yut');
 		while(!this.allThrowed()){
 			sleep(500);
@@ -408,15 +436,20 @@ class Game{
 
 	save(){
 		var saveData = {};
+		var sockets = {};
 		Object.keys(this.players).forEach((k) => {
 			var v = this.players[k];
 			v.pieces.forEach((v) => {
 				v.player = undefined;
 			});
+			sockets[k] = this.players[k].socket;
+			this.players[k].socket = undefined;
 		});
+
 		saveData.players = JSON.stringify(this.players);
 		Object.keys(this.players).forEach((k) => {
 			var v = this.players[k];
+			this.players[k].socket = sockets[k];
 			v.pieces.forEach((v2) => {
 				v2.player = v;
 			});
