@@ -5,6 +5,15 @@
   font-family: 'Nanum Barun Gothic', sans-serif !important;
 }
 
+body {
+  background-image: url('../img/background.jpg');
+  background-size: cover;
+}
+
+div {
+  opacity: 10 !important;
+}
+
 .row {
     margin-left: auto;
     margin-right: auto;
